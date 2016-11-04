@@ -1,6 +1,10 @@
 # network
 Code from troy:
 
+11/4/2016 Update:
+
+atlas_parse.py has been completed but not tested out yet.
+
 11/3/2016 Update:
 
 First version
