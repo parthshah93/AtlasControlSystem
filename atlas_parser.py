@@ -21,7 +21,7 @@ class AtlasParser(threading.Thread):
 			frame = [0x4E,0x52,0x01,0x00]
 			for x in command:
 				if x['name'] in self.commands:
-					frame.append(x['name'])
+					frame.append(self.commands[x['name']]['cmd'])
 					frame[3] += 1
 					if self.commands[x['name']]['writedata'] == 0x00:
 						for i in range(self.commands[x['name']]['writebits'] / 8)[::-1]: 
@@ -59,8 +59,8 @@ class AtlasParser(threading.Thread):
 									length_counter = 0
 									UI_data['data'].append({'name':j['name'], 'valid':False})
 									break;
-						if parsering_command:
-							temp_value |= received_data[4+i]
+						else:
+							temp_value = temp_value | received_data[4+i]
 							temp_value = temp_value << 8
 							length_counter += 8
 							if length_counter == self.commands[UI_data['data'][UI_data_index]['name']]['readbits']:

@@ -4,18 +4,18 @@ import json
 
 Command_Dict = {}
 
-Command_Dict['Abortion'] = {}
-Command_Dict['Abortion']['name'] = 'Abortion'
-Command_Dict['Abortion']['cmd'] = 0x7F
-Command_Dict['Abortion']['writebits'] = 8
-Command_Dict['Abortion']['writedata'] = 0b1010
-Command_Dict['Abortion']['readbits'] = 0
-Command_Dict['Abortion']['readdata'] = 0x00
-Command_Dict['Abortion']['wmin'] = -1
-Command_Dict['Abortion']['wmax'] = -1
-Command_Dict['Abortion']['rmin'] = -1
-Command_Dict['Abortion']['rmax'] = -1
-Command_Dict['Abortion']['returnable'] = 'none'
+Command_Dict['Abort'] = {}
+Command_Dict['Abort']['name'] = 'Abort'
+Command_Dict['Abort']['cmd'] = 0x7F
+Command_Dict['Abort']['writebits'] = 8
+Command_Dict['Abort']['writedata'] = 0b1010
+Command_Dict['Abort']['readbits'] = 0
+Command_Dict['Abort']['readdata'] = 0x00
+Command_Dict['Abort']['wmin'] = -1
+Command_Dict['Abort']['wmax'] = -1
+Command_Dict['Abort']['rmin'] = -1
+Command_Dict['Abort']['rmax'] = -1
+Command_Dict['Abort']['returnable'] = 'none'
 
 Command_Dict['W/R Motor0'] = {}
 Command_Dict['W/R Motor0']['name'] = 'W/R Motor0'
