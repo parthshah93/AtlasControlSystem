@@ -12,12 +12,12 @@
     "returnable": "required", 
     "wmin": 0
   }, 
-  "W/R Servo6": {
+  "W/R Servo4": {
     "rmin": 0, 
     "writedata": 0, 
-    "name": "W/R Servo6", 
+    "name": "W/R Servo4", 
     "rmax": 255, 
-    "cmd": 13, 
+    "cmd": 11, 
     "readdata": 0, 
     "writebits": 8, 
     "readbits": 8, 
@@ -51,12 +51,12 @@
     "returnable": "depends", 
     "wmin": 0
   }, 
-  "W/R Servo3": {
+  "W/R Servo6": {
     "rmin": 0, 
     "writedata": 0, 
-    "name": "W/R Servo3", 
+    "name": "W/R Servo6", 
     "rmax": 255, 
-    "cmd": 10, 
+    "cmd": 13, 
     "readdata": 0, 
     "writebits": 8, 
     "readbits": 8, 
@@ -77,23 +77,10 @@
     "returnable": "depends", 
     "wmin": 0
   }, 
-  "W/R Servo4": {
-    "rmin": 0, 
-    "writedata": 0, 
-    "name": "W/R Servo4", 
-    "rmax": 255, 
-    "cmd": 11, 
-    "readdata": 0, 
-    "writebits": 8, 
-    "readbits": 8, 
-    "wmax": 255, 
-    "returnable": "depends", 
-    "wmin": 0
-  }, 
-  "Abortion": {
+  "Abort": {
     "rmin": -1, 
     "writedata": 10, 
-    "name": "Abortion", 
+    "name": "Abort", 
     "rmax": -1, 
     "cmd": 127, 
     "readdata": 0, 
@@ -102,6 +89,19 @@
     "wmax": -1, 
     "returnable": "none", 
     "wmin": -1
+  }, 
+  "W/R Servo3": {
+    "rmin": 0, 
+    "writedata": 0, 
+    "name": "W/R Servo3", 
+    "rmax": 255, 
+    "cmd": 10, 
+    "readdata": 0, 
+    "writebits": 8, 
+    "readbits": 8, 
+    "wmax": 255, 
+    "returnable": "depends", 
+    "wmin": 0
   }, 
   "W/R Servo2": {
     "rmin": 0, 
