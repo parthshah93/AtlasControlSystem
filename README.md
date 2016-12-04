@@ -3,44 +3,46 @@ Code from troy:
 
 12/4/2016 Update:
 
-1.Fixed some bugs in atlas_socket.py and atlas_parser.py. They both work fine now.
-2.Added atlas_fakerobot.py. It is for testing emergency stop and basic remote control function.
-3.Revised atlas_gcs.py. Now WASD remote control for forward, turn left, backward and turn right are supported.
-4.Implement pygame module for capturing keyboard input in atlas_gcs.py.
+1.Fixed some bugs in atlas_socket.py and atlas_parser.py. They both work fine now.</br>
+2.Added atlas_fakerobot.py. It is for testing emergency stop and basic remote control function.</br>
+3.Revised atlas_gcs.py. Now WASD remote control for forward, turn left, backward and turn right are supported.</br>
+4.Implement pygame module for capturing keyboard input in atlas_gcs.py.</br>
+5.Multi threads architecture works well now. Further problem and risk have not been discovered(Need test).</br>
 
 How to test current function:
 
-Preparation:
-1.Download all files into a folder.
-2.Use IDLE to open atlas_fakerobot.py and atlas_gcs.py.
+Preparation:</br>
+1.Download all files into a folder.</br>
+2.Go to http://pygame.org/download.shtml find an appropriate py2.7 version for your platform.</br>
+3.Use IDLE to open atlas_fakerobot.py and atlas_gcs.py.</br>
 
-a) Test WASD direction control
-1.Run fakerobot first, then run gcs. There will be a console for fakerobot, and a console and a small black window for gcs. Flat them for convenience. Focus on small black window.
-2.Now you can see there are many lines rolling in two consoles, in gcs console, they indicate the status and commands inside gcs program and in fakerobot console, they indicate the data received by "robot"(see command table to decode them for correctness verification).
-3.Press either W,A,S or D(multi-press has not been supported yet), you should see there are both some changes in consoles. Notice that I only use motor0 and 1 now, and the interger format is True Form now(may debug this later).
+a) Test WASD direction control</br>
+1.Run fakerobot first, then run gcs. There will be a console for fakerobot, and a console and a small black window for gcs. Flat them for convenience. Focus on small black window.</br>
+2.Now you can see there are many lines rolling in two consoles, in gcs console, they indicate the status and commands inside gcs program and in fakerobot console, they indicate the data received by "robot"(see command table to decode them for correctness verification).</br>
+3.Press either W,A,S or D(multi-press has not been supported yet), you should see there are both some changes in consoles. Notice that I only use motor0 and 1 now, and the interger format is True Form now(may debug this later).</br>
 
-b) Test emergency connection break(only for gcs(ground contol station) side now)
-1.Run fakerobot first, then run gcs. There will be a console for fakerobot, and a console and a small black window for gcs. Flat them for convenience. Focus on small black window.
-2.Now you can see there are many lines rolling in two consoles, in gcs console, they indicate the status and commands inside gcs program and in fakerobot console, they indicate the data received by "robot"(see command table to decode them for correctness verification).
-3.Close fakerobot now, you should see that gcs print out "recover package sent". Then re-execute fakerobot, you can see gcs output recoverd.
+b) Test emergency connection break(only for gcs(ground contol station) side now)</br>
+1.Run fakerobot first, then run gcs. There will be a console for fakerobot, and a console and a small black window for gcs. Flat them for convenience. Focus on small black window.</br>
+2.Now you can see there are many lines rolling in two consoles, in gcs console, they indicate the status and commands inside gcs program and in fakerobot console, they indicate the data received by "robot"(see command table to decode them for correctness verification).</br>
+3.Close fakerobot now, you should see that gcs print out "recover package sent". Then re-execute fakerobot, you can see gcs output recoverd.</br>
 
-For future work(listed by importance from head to tail):
-1.Finish the parser code at Arduino side. At least guaranteeing direction control.
-2.Reorder the gcs code for better code logic.
-3.Enhance the input capture(including keyboard input and XBOX controller input). Since I choose PyGame module to handle these inputs, it is easy to connect any type of input device and run the whole project on any platform.
-4.Complete UI program for better information display.
-5.Pressure test.
+For future work(listed by importance from head to tail):</br>
+1.Finish the parser code at Arduino side. At least guaranteeing direction control.</br>
+2.Reorder the gcs code for better code logic.</br>
+3.Enhance the input capture(including keyboard input and XBOX controller input). Since I choose PyGame module to handle these inputs, it is easy to connect any type of input device and run the whole project on any platform.</br>
+4.Complete UI program for better information display.</br>
+5.Pressure test.</br>
 
-11/4/2016 Update:
+11/4/2016 Update:</br>
 
-atlas_parse.py has been completed but not tested out yet.
+atlas_parse.py has been completed but not tested out yet.</br>
 
-11/3/2016 Update:
+11/3/2016 Update:</br>
 
-First version
+First version</br>
 
-1.atlas_socket.py has been completed but not tested yet.
-2.atlas_command_table_maker.py has been completed.
-3.atlas_commands.json generated by maker above.
+1.atlas_socket.py has been completed but not tested yet.</br>
+2.atlas_command_table_maker.py has been completed.</br>
+3.atlas_commands.json generated by maker above.</br>
 
 
