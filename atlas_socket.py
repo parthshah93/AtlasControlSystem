@@ -25,7 +25,6 @@ class AtlasSocket(threading.Thread):
 		super(AtlasSocket, self).__init__(name = threadName)
 	def run(self):
 		while not self.destroy:
-			print "1"
 			if not self.hanging:
 				receive_data = bytearray(2500)
 				receive_dict = {}	#initialize the dict which used for reciving data
@@ -33,7 +32,7 @@ class AtlasSocket(threading.Thread):
 					receive_nbytes, receive_addr = self.conn.recvfrom_into(receive_data, 2048)	#read data from socket
 				except:
 					receive_nbytes = 0
-				print receive_nbytes
+				# print receive_nbytes
 				if receive_nbytes == 0:		#if there is no data in receiving buffer. Obviously, if there is no alive connection, socket will attempt connect to target continously
 					self.no_response_counter += 1		#increasing no-response counter
 					if self.no_response_counter >= self.failsafe_th:	#if the no-response counter reach the threshold
@@ -51,7 +50,7 @@ class AtlasSocket(threading.Thread):
 					self.output_buffer.put(receive_dict)	#put dict into output buffer(queue)
 				if self.no_response_counter > 0:			#handle the no-response situation(reconnection)
 					self.conn.sendto(self.HEARTBEAT_PACKAGE, (self.target_ip, self.target_port))	#send self.HEARTBEAT_PACKAGE to reconnect to the robot rather than sending command
-					print "recover package sent"
+					# print "recover package sent"
 					self.reconnection_flag = True
 				elif not self.input_buffer.empty():		#if there is at least one command need to be send in the input buffer(queue), send it
 					if self.reconnection_flag:
