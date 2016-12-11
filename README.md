@@ -1,7 +1,12 @@
 # network
-Code from troy:
+Code from troy:</br>
 
-12/4/2016 Update:
+12/4/2016 Update:</br>
+
+1.Added joystick control
+2.Tested higher report rate(30Hz)
+
+12/4/2016 Update:</br>
 
 1.Fixed some bugs in atlas_socket.py and atlas_parser.py. They both work fine now.</br>
 2.Added atlas_fakerobot.py. It is for testing emergency stop and basic remote control function.</br>
