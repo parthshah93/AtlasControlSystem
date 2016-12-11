@@ -33,8 +33,8 @@ b) Test emergency connection break(only for gcs(ground control station) side now
 
 For future work(listed by importance from head to tail):</br>
 1.Finish the parser code at Arduino side. At least guaranteeing direction control.</br>
-2.Reorder the gcs code for better code logic.</br>
-3.Enhance the input capture(including keyboard input and XBOX controller input). Since I choose PyGame module to handle these inputs, it is easy to connect any type of input device and run the whole project on any platform.</br>
+2.(done)Reorder the gcs code for better code logic.</br>
+3.(done)Enhance the input capture(including keyboard input and XBOX controller input). Since I choose PyGame module to handle these inputs, it is easy to connect any type of input device and run the whole project on any platform.</br>
 4.Complete UI program for better information display.</br>
 5.Pressure test.</br>
 
