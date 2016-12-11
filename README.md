@@ -1,7 +1,7 @@
 # network
 Code from troy:</br>
 
-12/4/2016 Update:</br>
+12/11/2016 Update:</br>
 
 1.Added joystick control</br>
 2.Tested higher report rate(30Hz)</br>
