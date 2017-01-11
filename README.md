@@ -3,8 +3,9 @@ Code from troy:</br>
 
 10/01/2017 Update:</br>
 
-1.Fixed PWM bugs.</br>
-2.Arduino side code is ready to use(only simple motor and servo control)</br>
+1.Uploaded first version of Arduino side code.</br>
+2.Fixed PWM bugs.</br>
+3.Arduino side code is ready to use(only simple motor and servo control)</br>
 
 12/11/2016 Update:</br>
 
