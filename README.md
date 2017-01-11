@@ -1,7 +1,7 @@
 # network
 Code from troy:</br>
 
-10/01/2017 Update:</br>
+01/10/2017 Update:</br>
 
 1.Uploaded first version of Arduino side code.</br>
 2.Fixed PWM bugs.</br>
