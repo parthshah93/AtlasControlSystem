@@ -1,6 +1,10 @@
 # network
 Code from troy:</br>
 
+01/22/2017 Update:</br>
+
+1.Reconnection feature added.</br>
+
 01/10/2017 Update:</br>
 
 1.Uploaded first version of Arduino side code.</br>
