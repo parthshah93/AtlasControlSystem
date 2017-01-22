@@ -50,7 +50,7 @@ class AtlasSocket(threading.Thread):
 					self.output_buffer.put(receive_dict)	#put dict into output buffer(queue)
 				if self.no_response_counter > 0:			#handle the no-response situation(reconnection)
 					self.conn.sendto(self.HEARTBEAT_PACKAGE, (self.target_ip, self.target_port))	#send self.HEARTBEAT_PACKAGE to reconnect to the robot rather than sending command
-					# print "recover package sent"
+					print "recover package sent"
 					self.reconnection_flag = True
 				elif not self.input_buffer.empty():		#if there is at least one command need to be send in the input buffer(queue), send it
 					if self.reconnection_flag:
@@ -68,6 +68,7 @@ class AtlasSocket(threading.Thread):
 			self.initialized = False
 		try:
 			self.conn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)	#initialize a socket object
+			self.conn.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 			self.conn.bind((self.local_ip, self.local_port))	#bind local ip and port
 			self.conn.setblocking(0)
 		except:
