@@ -7,9 +7,10 @@ import pygame
 	
 
 def putincommand(data):
-	command_buffer_lock.acquire()
-	command_buffer.put(data)
-	command_buffer_lock.release()
+	if not connection_break:
+		command_buffer_lock.acquire()
+		command_buffer.put(data)
+		command_buffer_lock.release()
 
 def linear_remap_signed(dead_zone, input_data):
 	if input_data > -dead_zone and input_data < dead_zone:
@@ -36,19 +37,26 @@ ui_buffer = Queue.Queue(maxsize = -1)
 
 command_buffer_lock = threading.Lock()
 
-target_ip = "127.0.0.1"
-target_port = 10086
-local_ip = "127.0.0.1"
-local_port = 8469
+target_ip = "192.168.1.100"
+target_port = 10010
+local_ip = "192.168.1.102"
+local_port = 10010
 
-socket_thread = atlas_socket.AtlasSocket("thread-socket", parser_to_socket, socket_to_parser, target_ip, target_port, local_ip, local_port, 30, 10)
-parser_thread = atlas_parser.AtlasParser("thread-parser", socket_to_parser, parser_to_socket, command_buffer, command_buffer_lock, ui_buffer, 30)
+connection_break = False
+
+socket_thread = atlas_socket.AtlasSocket("thread-socket", parser_to_socket, socket_to_parser, target_ip, target_port, local_ip, local_port, 20, 10)
+parser_thread = atlas_parser.AtlasParser("thread-parser", socket_to_parser, parser_to_socket, command_buffer, command_buffer_lock, ui_buffer, 20)
 
 socket_thread.start()
 parser_thread.start()
 
 socket_thread.socket_start()
 
+# look at the ethernet connection condition
+# if(connection breaks)
+# 	socket.socket_destroy;
+# if(connection recovered)
+# 	socket.start();
 # PyGame Initialization
 pygame.init()
 pygame.joystick.init()
@@ -62,7 +70,7 @@ done = False
 mode = ''
 keyboard_speed_setting_toggle = False
 joystick_speed_setting_toggle = False
-speed_list = {'straightforward':[127,127], 'right':[127,255], 'backward':[255,255], 'left':[255,127]}
+speed_list = {'straightforward':[255,255], 'right':[255,0], 'backward':[0,0], 'left':[0,255]}
 dead_zone_joystick = 150
 axis_change_th = 20
 x_axis_pre = 0
@@ -76,6 +84,12 @@ y_axis_home = False
 
 # Main loop
 while done == False:
+	if not ui_buffer.empty():
+		ui_data = ui_buffer.get()
+		if ui_data['type'] == "connection_break":
+			connection_break = True
+		else:
+			connection_break = False
 	for event in pygame.event.get(): # User did something
 		if event.type == pygame.QUIT: # If user clicked close
 			done=True # Flag that we are done so we exit this loop
@@ -146,8 +160,8 @@ while done == False:
 			send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
 			putincommand(send_data)
 		else:
-			send_data.append({'name': 'W/R Motor0', 'value': 0})
-			send_data.append({'name': 'W/R Motor1', 'value': 0})
+			send_data.append({'name': 'W/R Motor0', 'value': 127})
+			send_data.append({'name': 'W/R Motor1', 'value': 127})
 			putincommand(send_data)
 		keyboard_speed_setting_toggle = False
 	pygame.display.flip()
