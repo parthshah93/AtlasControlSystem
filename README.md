@@ -1,6 +1,10 @@
 # network
 Code from troy:</br>
 
+02/06/2017 Update:</br>
+
+1.Added indicators features.</br>
+
 01/22/2017 Update:</br>
 
 1.Reconnection feature added.</br>
