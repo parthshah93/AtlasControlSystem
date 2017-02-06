@@ -11,11 +11,11 @@
 
 class SysTick{
 public:
-	void init();
-	void start();
-	void stop();
-	unsigned int getMillisecond();
-	void setTimer2OCR(unsigned int value);
+  void init();
+  void start();
+  void stop();
+  unsigned int getMillisecond();
+  void setTimer2OCR(unsigned int value);
 };
 
 
