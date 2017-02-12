@@ -40,15 +40,15 @@ void completeReceivingPackage(){
 }
 
 void usartInit(){
-  UBRR0H = (unsigned char) (BAUD_9600 >> 8);
-  UBRR0L = (unsigned char) BAUD_9600;
-  UCSR0C |= (1 << UCSZ00) | (1 << USBS0);
-  UCSR0B |= (1 << RXEN0) | (1 << TXEN0) | (1 << RXCIE0);
+  UBRR1H = (unsigned char) (BAUD_9600 >> 8);
+  UBRR1L = (unsigned char) BAUD_9600;
+  UCSR1C |= (1 << UCSZ10) | (1 << USBS1);
+  UCSR1B |= (1 << RXEN1) | (1 << TXEN1) | (1 << RXCIE1);
 }
 
 void sendChar(unsigned char c){
-  while(!(UCSR0A & 0x20));
-  UDR0 = c;
+  while(!(UCSR1A & 0x20));
+  UDR1 = c;
 }
 
 void sendBuffer(unsigned char* p, unsigned int length){
@@ -103,8 +103,8 @@ void sendNewLine(){
   sendChar('\n');
 }
 
-ISR(USART0_RX_vect){
-  data = UDR0;
+ISR(USART1_RX_vect){
+  data = UDR1;
   if(!recvPackageComplete){
     if(!recvPackageBegin){
         if(recvHeaderCounter == 0 && data == 'N')

@@ -91,12 +91,12 @@ void loop() {
     if(recvPackageComplete){
       comm1.parse(recvBuffer);
       comm1.handleReturnRequest();
-      checkFailSafe();
       refreshMotors();
       refreshServos();
-      myIndicator.refreshIndicator();
       recvPackageComplete = 0;
     }
+    checkFailSafe();
+    myIndicator.refreshIndicator();
     globalRefreshReady = 0;
   }
 }

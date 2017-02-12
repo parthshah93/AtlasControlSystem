@@ -1,6 +1,7 @@
 #ifndef __INDICATOR_H
 #define __INDICATOR_H
 
+#include <Arduino.h>
 class Indicator{
 public:
   Indicator(){
