@@ -12,6 +12,7 @@ class AtlasParser(threading.Thread):
 		self.command_buffer_lock = command_buffer_lock
 		self.UI_buffer = UI_buffer
 		self.report_rate = report_rate
+		self.isHeartBeatPrev = False
 		self.load_commands('atlas_commands.json')
 		super(AtlasParser, self).__init__(name = threadName)
 	def run(self):
@@ -44,6 +45,7 @@ class AtlasParser(threading.Thread):
 				if received_data['type'] == 'connection_break':
 					UI_data['type'] = 'connection_break'
 					self.UI_buffer.put(UI_data)
+					self.isHeartBeatPrev = False
 				elif received_data['type'] == 'regular_data':
 					if received_data['data'][0] == 0x4E and received_data['data'][1] == 0x52 and received_data['data'][2] == 0x02:
 						UI_data['addr'] = received_data['addr']
@@ -72,6 +74,12 @@ class AtlasParser(threading.Thread):
 									if i == received_data['data'][3] - 1:
 										UI_data['data'][UI_data_index]['valid'] = True
 						self.UI_buffer.put(UI_data)
+						self.isHeartBeatPrev = False
+					elif received_data['data'][0] == 0x4E and received_data['data'][1] == 0x52 and received_data['data'][2] == 0x00:
+						if not self.isHeartBeatPrev:
+							self.isHeartBeatPrev = True
+							UI_data['type'] = 'heart_beat'
+							self.UI_buffer.put(UI_data)
 			time.sleep(1.0 / (2 * self.report_rate))
 	def load_commands(self, filename):
 		with open(filename, 'r') as f:

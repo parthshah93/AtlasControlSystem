@@ -14,11 +14,11 @@ def putincommand(data):
 
 def linear_remap_signed(dead_zone, input_data):
 	if input_data > -dead_zone and input_data < dead_zone:
-		return 0
+		return 127
 	if input_data > 0:
-		return (input_data - dead_zone) * 127 / (1000 - dead_zone)
+		return (input_data - dead_zone) * 127 / (1000 - dead_zone) + 127
 	if input_data < 0:
-		return 256 - ((-input_data - dead_zone) * 127 / (1000 - dead_zone) + 1)
+		return 127 - (-input_data - dead_zone) * 127 / (1000 - dead_zone)
 
 # while True:
 # 	if not ui_buffer.empty():
@@ -37,14 +37,14 @@ ui_buffer = Queue.Queue(maxsize = -1)
 
 command_buffer_lock = threading.Lock()
 
-target_ip = "192.168.1.100"
+target_ip = "192.168.1.121"
 target_port = 10010
-local_ip = "192.168.1.102"
+local_ip = "192.168.1.100"
 local_port = 10010
 
 connection_break = False
 
-socket_thread = atlas_socket.AtlasSocket("thread-socket", parser_to_socket, socket_to_parser, target_ip, target_port, local_ip, local_port, 20, 10)
+socket_thread = atlas_socket.AtlasSocket("thread-socket", parser_to_socket, socket_to_parser, target_ip, target_port, local_ip, local_port, 30, 10)
 parser_thread = atlas_parser.AtlasParser("thread-parser", socket_to_parser, parser_to_socket, command_buffer, command_buffer_lock, ui_buffer, 20)
 
 socket_thread.start()
