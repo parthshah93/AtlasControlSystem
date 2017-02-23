@@ -20,6 +20,33 @@ def linear_remap_signed(dead_zone, input_data):
 	if input_data < 0:
 		return 127 - (-input_data - dead_zone) * 127 / (1000 - dead_zone)
 
+def linear_remap(input_data):
+	if input_data >= 0:
+		return input_data * 127 / 1000 + 127
+	if input_data < 0:
+		return 127 + input_data * 127 / 1000
+
+def dead_zone_remove(dead_zone, input_data):
+	if input_data > -dead_zone and input_data < dead_zone:
+		return 0
+	if input_data > 0:
+		return (input_data - dead_zone) * 1000 / (1000 - dead_zone)
+	if input_data < 0:
+		return -(-input_data - dead_zone) * 1000 / (1000 - dead_zone)
+
+def restrict_range(n):
+	if n > 998:
+		return 998
+	if n < -995:
+		return -995
+	return n
+
+def mix_control(x_axis, y_axis, wheel):
+	if wheel == 0 or wheel == 1:
+		return int(linear_remap(restrict_range(dead_zone_remove(dead_zone_joystick, x_axis) + dead_zone_remove(dead_zone_joystick,y_axis))))
+	if wheel == 2 or wheel == 3:
+		return int(linear_remap(restrict_range(-(dead_zone_remove(dead_zone_joystick,x_axis) - dead_zone_remove(dead_zone_joystick,y_axis)))))
+
 # while True:
 # 	if not ui_buffer.empty():
 # 		dic = ui_buffer.get()
@@ -37,10 +64,10 @@ ui_buffer = Queue.Queue(maxsize = -1)
 
 command_buffer_lock = threading.Lock()
 
-target_ip = "192.168.1.121"
-target_port = 10010
-local_ip = "192.168.1.100"
-local_port = 10010
+target_ip = "127.0.0.1"
+target_port = 10086
+local_ip = "127.0.0.1"
+local_port = 8469
 
 connection_break = False
 
@@ -70,7 +97,7 @@ done = False
 mode = ''
 keyboard_speed_setting_toggle = False
 joystick_speed_setting_toggle = False
-speed_list = {'straightforward':[255,255], 'right':[255,0], 'backward':[0,0], 'left':[0,255]}
+speed_list = {'straightforward':[255,255,255,255], 'right':[0,0,255,255], 'backward':[0,0,0,0], 'left':[255,255,0,0]}
 dead_zone_joystick = 150
 axis_change_th = 20
 x_axis_pre = 0
@@ -112,7 +139,7 @@ while done == False:
 				mode = 'left'
 				print "Left pressed"
 				keyboard_speed_setting_toggle = True
-		if event.type == pygame.KEYUP:
+		if event.type == pygame.KEYUP and (event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_s or event.key == pygame.K_d):
 			mode = ''
 			print "Key released"
 			keyboard_speed_setting_toggle = True
@@ -134,7 +161,8 @@ while done == False:
 				joystick_speed_setting_toggle = True
 				keyboard_speed_setting_toggle = False
 				x_axis_home = False
-				x_axis_remapped = int(linear_remap_signed(dead_zone_joystick, x_axis_raw))
+				x_axis_remapped = x_axis_raw
+				# x_axis_remapped = int(linear_remap_signed(dead_zone_joystick, x_axis_raw))
 			if not int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) and not y_axis_home:
 				joystick_speed_setting_toggle = True
 				keyboard_speed_setting_toggle = False
@@ -144,13 +172,16 @@ while done == False:
 				joystick_speed_setting_toggle = True
 				keyboard_speed_setting_toggle = False
 				y_axis_home = False
-				y_axis_remapped = int(linear_remap_signed(dead_zone_joystick, y_axis_raw))
+				y_axis_remapped = y_axis_raw
+				# y_axis_remapped = int(linear_remap_signed(dead_zone_joystick, y_axis_raw))
 			x_axis_pre = x_axis_raw
 			y_axis_pre = y_axis_raw
 	if joystick_speed_setting_toggle:
 		send_data = []
-		send_data.append({'name': 'W/R Motor0', 'value': x_axis_remapped})
-		send_data.append({'name': 'W/R Motor1', 'value': y_axis_remapped})
+		send_data.append({'name': 'W/R Motor0', 'value': mix_control(x_axis_remapped, y_axis_remapped, 0)})
+		send_data.append({'name': 'W/R Motor1', 'value': mix_control(x_axis_remapped, y_axis_remapped, 1)})
+		send_data.append({'name': 'W/R Motor2', 'value': mix_control(x_axis_remapped, y_axis_remapped, 2)})
+		send_data.append({'name': 'W/R Motor3', 'value': mix_control(x_axis_remapped, y_axis_remapped, 3)})
 		putincommand(send_data)
 		joystick_speed_setting_toggle = False
 	if keyboard_speed_setting_toggle:
@@ -158,10 +189,14 @@ while done == False:
 		if not mode == '':
 			send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
 			send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
+			send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
+			send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
 			putincommand(send_data)
 		else:
 			send_data.append({'name': 'W/R Motor0', 'value': 127})
 			send_data.append({'name': 'W/R Motor1', 'value': 127})
+			send_data.append({'name': 'W/R Motor2', 'value': 127})
+			send_data.append({'name': 'W/R Motor3', 'value': 127})
 			putincommand(send_data)
 		keyboard_speed_setting_toggle = False
 	pygame.display.flip()
