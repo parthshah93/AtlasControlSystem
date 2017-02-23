@@ -22,30 +22,33 @@ def linear_remap_signed(dead_zone, input_data):
 
 def linear_remap(input_data):
 	if input_data >= 0:
-		return input_data * 127 / 1000 + 127
+		return (input_data / 1000.0) * 126 + 127
 	if input_data < 0:
-		return 127 + input_data * 127 / 1000
+		return 127 + (input_data / 1000.0) * 126
 
 def dead_zone_remove(dead_zone, input_data):
 	if input_data > -dead_zone and input_data < dead_zone:
 		return 0
 	if input_data > 0:
-		return (input_data - dead_zone) * 1000 / (1000 - dead_zone)
+		return ((input_data - dead_zone) / (1000.0 - dead_zone)) * 1000
 	if input_data < 0:
-		return -(-input_data - dead_zone) * 1000 / (1000 - dead_zone)
+		return (-(-input_data - dead_zone) / (1000.0 - dead_zone)) * 1000
 
 def restrict_range(n):
-	if n > 998:
-		return 998
-	if n < -995:
-		return -995
-	return n
+	if n >= 1000:
+		return 1000
+	elif n <= -1000:
+		return -1000
+	else:
+		return n
 
 def mix_control(x_axis, y_axis, wheel):
+	x_processed = dead_zone_remove(dead_zone_joystick, x_axis)
+	y_processed = dead_zone_remove(dead_zone_joystick, y_axis)
 	if wheel == 0 or wheel == 1:
-		return int(linear_remap(restrict_range(dead_zone_remove(dead_zone_joystick, x_axis) + dead_zone_remove(dead_zone_joystick,y_axis))))
+		return int(linear_remap(restrict_range(x_processed + y_processed)))
 	if wheel == 2 or wheel == 3:
-		return int(linear_remap(restrict_range(-(dead_zone_remove(dead_zone_joystick,x_axis) - dead_zone_remove(dead_zone_joystick,y_axis)))))
+		return int(linear_remap(-restrict_range(x_processed - y_processed)))
 
 # while True:
 # 	if not ui_buffer.empty():
@@ -149,10 +152,10 @@ while done == False:
 		if joystick_count:
 			joystick = pygame.joystick.Joystick(0)
 			joystick.init()
-			x_axis_raw = -1000 * joystick.get_axis(0)
-			y_axis_raw = -1000 * joystick.get_axis(1)
+			x_axis_raw = 1000 * joystick.get_axis(0)
+			y_axis_raw = 1000 * joystick.get_axis(1)
 			# print x_axis_raw, " ", y_axis_raw
-			if not int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) and not x_axis_home:
+			if int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) == 127 and not x_axis_home:
 				joystick_speed_setting_toggle = True
 				keyboard_speed_setting_toggle = False
 				x_axis_home = True
@@ -163,7 +166,7 @@ while done == False:
 				x_axis_home = False
 				x_axis_remapped = x_axis_raw
 				# x_axis_remapped = int(linear_remap_signed(dead_zone_joystick, x_axis_raw))
-			if not int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) and not y_axis_home:
+			if int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) == 127 and not y_axis_home:
 				joystick_speed_setting_toggle = True
 				keyboard_speed_setting_toggle = False
 				y_axis_home = True
