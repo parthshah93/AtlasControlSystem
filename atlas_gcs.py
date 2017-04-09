@@ -46,9 +46,9 @@ def mix_control(x_axis, y_axis, wheel):
 	x_processed = dead_zone_remove(dead_zone_joystick, x_axis)
 	y_processed = dead_zone_remove(dead_zone_joystick, y_axis)
 	if wheel == 0 or wheel == 1:
-		return int(linear_remap(restrict_range(x_processed + y_processed)))
+		return int(linear_remap(restrict_range(x_processed + y_processed)) * motor_reverse_bit[wheel])
 	if wheel == 2 or wheel == 3:
-		return int(linear_remap(-restrict_range(x_processed - y_processed)))
+		return int(linear_remap(-restrict_range(x_processed - y_processed)) * motor_reverse_bit[wheel])
 
 # while True:
 # 	if not ui_buffer.empty():
@@ -101,6 +101,7 @@ mode = ''
 keyboard_speed_setting_toggle = False
 joystick_speed_setting_toggle = False
 speed_list = {'straightforward':[255,255,255,255], 'right':[0,0,255,255], 'backward':[0,0,0,0], 'left':[255,255,0,0]}
+motor_reverse_bit = [1, 1, -1, -1]
 dead_zone_joystick = 150
 axis_change_th = 20
 x_axis_pre = 0
@@ -160,7 +161,7 @@ while done == False:
 				keyboard_speed_setting_toggle = False
 				x_axis_home = True
 				x_axis_remapped = 0
-			elif abs(x_axis_raw - x_axis_pre) > axis_change_th:
+			elif abs(x_axis_raw - x_axis_pre) > axis_change_th and int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) != 127:
 				joystick_speed_setting_toggle = True
 				keyboard_speed_setting_toggle = False
 				x_axis_home = False
@@ -171,7 +172,7 @@ while done == False:
 				keyboard_speed_setting_toggle = False
 				y_axis_home = True
 				y_axis_remapped = 0
-			elif abs(y_axis_raw - y_axis_pre) > axis_change_th:
+			elif abs(y_axis_raw - y_axis_pre) > axis_change_th and int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) != 127:
 				joystick_speed_setting_toggle = True
 				keyboard_speed_setting_toggle = False
 				y_axis_home = False
