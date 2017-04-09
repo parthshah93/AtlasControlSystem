@@ -46,9 +46,9 @@ def mix_control(x_axis, y_axis, wheel):
 	x_processed = dead_zone_remove(dead_zone_joystick, x_axis)
 	y_processed = dead_zone_remove(dead_zone_joystick, y_axis)
 	if wheel == 0 or wheel == 1:
-		return int(linear_remap(restrict_range(x_processed + y_processed)) * motor_reverse_bit[wheel])
+		return int(linear_remap(restrict_range(x_processed + y_processed) * motor_reverse_bit[wheel]))
 	if wheel == 2 or wheel == 3:
-		return int(linear_remap(-restrict_range(x_processed - y_processed)) * motor_reverse_bit[wheel])
+		return int(linear_remap(-restrict_range(x_processed - y_processed) * motor_reverse_bit[wheel]))
 
 # while True:
 # 	if not ui_buffer.empty():
@@ -67,10 +67,10 @@ ui_buffer = Queue.Queue(maxsize = -1)
 
 command_buffer_lock = threading.Lock()
 
-target_ip = "127.0.0.1"
-target_port = 10086
-local_ip = "127.0.0.1"
-local_port = 8469
+target_ip = "192.168.1.120"
+target_port = 10010
+local_ip = "192.168.1.100"
+local_port = 10010
 
 connection_break = False
 
