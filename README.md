@@ -1,6 +1,11 @@
 # network
 Code from troy:</br>
 
+04/30/2017 Update:</br>
+
+1.Added scissor and belt functions</br>
+2.Fixed crash problem</br>
+
 02/22/2017 Update:</br>
 
 1.Added mixing control feature</br>
