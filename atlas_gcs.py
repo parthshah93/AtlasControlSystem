@@ -67,15 +67,15 @@ ui_buffer = Queue.Queue(maxsize = -1)
 
 command_buffer_lock = threading.Lock()
 
-target_ip = "192.168.1.120"
-target_port = 10010
-local_ip = "192.168.1.100"
-local_port = 10010
+#target_ip = "192.168.1.120"
+#target_port = 10010
+#local_ip = "192.168.1.100"
+#local_port = 10010
 
-# target_ip = "127.0.0.1"
-# target_port = 10086
-# local_ip = "127.0.0.1"
-# local_port = 8469
+target_ip = "127.0.0.1"
+target_port = 10086
+local_ip = "127.0.0.1"
+local_port = 8469
 
 connection_break = False
 
@@ -240,6 +240,8 @@ while done == False:
 				joystick_speed_setting_toggle = False
 				keyboard_speed_setting_toggle = False
 				digging_setting_toggle = True
+			scissor_button_pre = scissor_button
+			belt_button_pre = belt_button
 			dig_button_pre = dig_button
 			x_axis_pre = x_axis_raw
 			y_axis_pre = y_axis_raw
