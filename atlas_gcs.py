@@ -279,3 +279,4 @@ while done == False:
 		putincommand(send_data)
 	pygame.display.flip()
 	clock.tick(60)
+pygame.quit ()
