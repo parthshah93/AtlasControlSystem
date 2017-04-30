@@ -72,6 +72,11 @@ target_port = 10010
 local_ip = "192.168.1.100"
 local_port = 10010
 
+# target_ip = "127.0.0.1"
+# target_port = 10086
+# local_ip = "127.0.0.1"
+# local_port = 8469
+
 connection_break = False
 
 socket_thread = atlas_socket.AtlasSocket("thread-socket", parser_to_socket, socket_to_parser, target_ip, target_port, local_ip, local_port, 30, 10)
@@ -100,12 +105,15 @@ done = False
 mode = ''
 keyboard_speed_setting_toggle = False
 joystick_speed_setting_toggle = False
-speed_list = {'straightforward':[255,255,255,255], 'right':[0,0,255,255], 'backward':[0,0,0,0], 'left':[255,255,0,0]}
+digging_setting_toggle = False
+speed_list = {'straightforward':[255,255,255,255], 'right':[0,0,255,255], 
+		'backward':[0,0,0,0], 'left':[255,255,0,0], 'digging':[0,255,255,0], 'stop':[127,127,127,127]}
 motor_reverse_bit = [1, 1, -1, -1]
 dead_zone_joystick = 150
 axis_change_th = 20
 x_axis_pre = 0
 y_axis_pre = 0
+dig_button_pre = 0
 x_axis_raw = 0
 y_axis_raw = 0
 x_axis_remapped = 0
@@ -143,7 +151,12 @@ while done == False:
 				mode = 'left'
 				print "Left pressed"
 				keyboard_speed_setting_toggle = True
-		if event.type == pygame.KEYUP and (event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_s or event.key == pygame.K_d):
+			elif event.key == pygame.K_q:
+				mode = 'digging'
+				print "Digging pressed"
+				digging_setting_toggle = True
+		if event.type == pygame.KEYUP and (event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_s 
+							or event.key == pygame.K_d or event.key == pygame.K_q):
 			mode = ''
 			print "Key released"
 			keyboard_speed_setting_toggle = True
@@ -155,29 +168,42 @@ while done == False:
 			joystick.init()
 			x_axis_raw = 1000 * joystick.get_axis(0)
 			y_axis_raw = 1000 * joystick.get_axis(1)
+			dig_button = joystick.get_button(0)
 			# print x_axis_raw, " ", y_axis_raw
-			if int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) == 127 and not x_axis_home:
-				joystick_speed_setting_toggle = True
+			if dig_button == 0 and dig_button_pre == 0:
+				if int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) == 127 and not x_axis_home:
+					joystick_speed_setting_toggle = True
+					keyboard_speed_setting_toggle = False
+					x_axis_home = True
+					x_axis_remapped = 0
+				elif abs(x_axis_raw - x_axis_pre) > axis_change_th and int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) != 127:
+					joystick_speed_setting_toggle = True
+					keyboard_speed_setting_toggle = False
+					x_axis_home = False
+					x_axis_remapped = x_axis_raw
+					# x_axis_remapped = int(linear_remap_signed(dead_zone_joystick, x_axis_raw))
+				if int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) == 127 and not y_axis_home:
+					joystick_speed_setting_toggle = True
+					keyboard_speed_setting_toggle = False
+					y_axis_home = True
+					y_axis_remapped = 0
+				elif abs(y_axis_raw - y_axis_pre) > axis_change_th and int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) != 127:
+					joystick_speed_setting_toggle = True
+					keyboard_speed_setting_toggle = False
+					y_axis_home = False
+					y_axis_remapped = y_axis_raw
+					# y_axis_remapped = int(linear_remap_signed(dead_zone_joystick, y_axis_raw))
+			elif dig_button == 1 and dig_button_pre == 0:
+				mode = 'digging'
+				joystick_speed_setting_toggle = False
 				keyboard_speed_setting_toggle = False
-				x_axis_home = True
-				x_axis_remapped = 0
-			elif abs(x_axis_raw - x_axis_pre) > axis_change_th and int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) != 127:
-				joystick_speed_setting_toggle = True
+				digging_setting_toggle = True
+			elif dig_button == 0 and dig_button_pre == 1:
+				mode = 'stop'
+				joystick_speed_setting_toggle = False
 				keyboard_speed_setting_toggle = False
-				x_axis_home = False
-				x_axis_remapped = x_axis_raw
-				# x_axis_remapped = int(linear_remap_signed(dead_zone_joystick, x_axis_raw))
-			if int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) == 127 and not y_axis_home:
-				joystick_speed_setting_toggle = True
-				keyboard_speed_setting_toggle = False
-				y_axis_home = True
-				y_axis_remapped = 0
-			elif abs(y_axis_raw - y_axis_pre) > axis_change_th and int(linear_remap_signed(dead_zone_joystick, y_axis_raw)) != 127:
-				joystick_speed_setting_toggle = True
-				keyboard_speed_setting_toggle = False
-				y_axis_home = False
-				y_axis_remapped = y_axis_raw
-				# y_axis_remapped = int(linear_remap_signed(dead_zone_joystick, y_axis_raw))
+				digging_setting_toggle = True
+			dig_button_pre = dig_button
 			x_axis_pre = x_axis_raw
 			y_axis_pre = y_axis_raw
 	if joystick_speed_setting_toggle:
@@ -203,5 +229,13 @@ while done == False:
 			send_data.append({'name': 'W/R Motor3', 'value': 127})
 			putincommand(send_data)
 		keyboard_speed_setting_toggle = False
+	if digging_setting_toggle:
+		send_data = []
+		send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
+		send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
+		send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
+		send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
+		putincommand(send_data)
+		digging_setting_toggle = False
 	pygame.display.flip()
 	clock.tick(60)
