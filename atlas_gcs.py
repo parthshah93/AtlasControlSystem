@@ -79,8 +79,19 @@ local_port = 10010
 
 connection_break = False
 
-socket_thread = atlas_socket.AtlasSocket("thread-socket", parser_to_socket, socket_to_parser, target_ip, target_port, local_ip, local_port, 30, 10)
-parser_thread = atlas_parser.AtlasParser("thread-parser", socket_to_parser, parser_to_socket, command_buffer, command_buffer_lock, ui_buffer, 20)
+socket_thread = atlas_socket.AtlasSocket("thread-socket", 
+											parser_to_socket, 
+											socket_to_parser, 
+											target_ip, 
+											target_port, 
+											local_ip, 
+											local_port, 30, 10)
+parser_thread = atlas_parser.AtlasParser("thread-parser", 
+											socket_to_parser, 
+											parser_to_socket, 
+											command_buffer, 
+											command_buffer_lock, 
+											ui_buffer, 20)
 
 socket_thread.start()
 parser_thread.start()
@@ -103,16 +114,24 @@ clock = pygame.time.Clock()
 # Variable Initialization
 done = False
 mode = ''
+belt_mode = ''
+scissor_mode = ''
 keyboard_speed_setting_toggle = False
 joystick_speed_setting_toggle = False
 digging_setting_toggle = False
+belt_setting_toggle = False
+scissor_setting_toggle = False
 speed_list = {'straightforward':[255,255,255,255], 'right':[0,0,255,255], 
-		'backward':[0,0,0,0], 'left':[255,255,0,0], 'digging':[0,255,255,0], 'stop':[127,127,127,127]}
+		'backward':[0,0,0,0], 'left':[255,255,0,0], 'digging':[0,255,255,0], 
+		'stop':[127,127,127,127], 'scissor_up':26, 'scissor_down':228, 'scissor_stop': 127, 
+		'belt_fwd': 255, 'belt_bwd': 0, 'belt_stop': 127}
 motor_reverse_bit = [1, 1, -1, -1]
 dead_zone_joystick = 150
 axis_change_th = 20
 x_axis_pre = 0
 y_axis_pre = 0
+belt_button_pre = 0
+scissor_button_pre = 0
 dig_button_pre = 0
 x_axis_raw = 0
 y_axis_raw = 0
@@ -169,6 +188,7 @@ while done == False:
 			x_axis_raw = 1000 * joystick.get_axis(0)
 			y_axis_raw = 1000 * joystick.get_axis(1)
 			dig_button = joystick.get_button(0)
+			belt_button, scissor_button = joystick.get_hat(0)
 			# print x_axis_raw, " ", y_axis_raw
 			if dig_button == 0 and dig_button_pre == 0:
 				if int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) == 127 and not x_axis_home:
@@ -193,6 +213,23 @@ while done == False:
 					y_axis_home = False
 					y_axis_remapped = y_axis_raw
 					# y_axis_remapped = int(linear_remap_signed(dead_zone_joystick, y_axis_raw))
+				if belt_button != belt_button_pre:
+					if belt_button == 1:
+						belt_mode = 'belt_fwd'
+					elif belt_button == -1:
+						belt_mode = 'belt_bwd'
+					elif belt_button == 0:
+						belt_mode = 'belt_stop'
+					belt_setting_toggle = True
+				if scissor_button_pre != scissor_button:
+					if scissor_button == 1:
+						scissor_mode = 'scissor_up'
+					elif scissor_button == -1:
+						scissor_mode = 'scissor_down'
+					elif scissor_button == 0:
+						scissor_mode = 'scissor_stop'
+					scissor_setting_toggle = True
+
 			elif dig_button == 1 and dig_button_pre == 0:
 				mode = 'digging'
 				joystick_speed_setting_toggle = False
@@ -206,36 +243,39 @@ while done == False:
 			dig_button_pre = dig_button
 			x_axis_pre = x_axis_raw
 			y_axis_pre = y_axis_raw
-	if joystick_speed_setting_toggle:
+	if joystick_speed_setting_toggle or keyboard_speed_setting_toggle \
+		or digging_setting_toggle or belt_setting_toggle or scissor_setting_toggle:
 		send_data = []
-		send_data.append({'name': 'W/R Motor0', 'value': mix_control(x_axis_remapped, y_axis_remapped, 0)})
-		send_data.append({'name': 'W/R Motor1', 'value': mix_control(x_axis_remapped, y_axis_remapped, 1)})
-		send_data.append({'name': 'W/R Motor2', 'value': mix_control(x_axis_remapped, y_axis_remapped, 2)})
-		send_data.append({'name': 'W/R Motor3', 'value': mix_control(x_axis_remapped, y_axis_remapped, 3)})
-		putincommand(send_data)
-		joystick_speed_setting_toggle = False
-	if keyboard_speed_setting_toggle:
-		send_data = []
-		if not mode == '':
+		if joystick_speed_setting_toggle:
+			send_data.append({'name': 'W/R Motor0', 'value': mix_control(x_axis_remapped, y_axis_remapped, 0)})
+			send_data.append({'name': 'W/R Motor1', 'value': mix_control(x_axis_remapped, y_axis_remapped, 1)})
+			send_data.append({'name': 'W/R Motor2', 'value': mix_control(x_axis_remapped, y_axis_remapped, 2)})
+			send_data.append({'name': 'W/R Motor3', 'value': mix_control(x_axis_remapped, y_axis_remapped, 3)})
+			joystick_speed_setting_toggle = False
+		if keyboard_speed_setting_toggle:
+			if not mode == '':
+				send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
+				send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
+				send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
+				send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
+			else:
+				send_data.append({'name': 'W/R Motor0', 'value': 127})
+				send_data.append({'name': 'W/R Motor1', 'value': 127})
+				send_data.append({'name': 'W/R Motor2', 'value': 127})
+				send_data.append({'name': 'W/R Motor3', 'value': 127})
+			keyboard_speed_setting_toggle = False
+		if digging_setting_toggle:
 			send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
 			send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
 			send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
 			send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
-			putincommand(send_data)
-		else:
-			send_data.append({'name': 'W/R Motor0', 'value': 127})
-			send_data.append({'name': 'W/R Motor1', 'value': 127})
-			send_data.append({'name': 'W/R Motor2', 'value': 127})
-			send_data.append({'name': 'W/R Motor3', 'value': 127})
-			putincommand(send_data)
-		keyboard_speed_setting_toggle = False
-	if digging_setting_toggle:
-		send_data = []
-		send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
-		send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
-		send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
-		send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
+			digging_setting_toggle = False
+		if belt_setting_toggle:
+			send_data.append({'name': 'W/R Servo1', 'value': speed_list[belt_mode]})
+			belt_setting_toggle = False
+		if scissor_setting_toggle:
+			send_data.append({'name': 'W/R Servo0', 'value': speed_list[scissor_mode]})
+			scissor_setting_toggle = False
 		putincommand(send_data)
-		digging_setting_toggle = False
 	pygame.display.flip()
 	clock.tick(60)
