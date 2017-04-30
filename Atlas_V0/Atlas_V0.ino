@@ -47,6 +47,8 @@ void emergencyStop(){
   int i;
   for(i = 0; i < 4; i++)
     myPWM.setMotor(i, 127);
+  for(i = 0; i < 2; i++)
+    myPWM.setServo(i, 127);
 }
 
 void setup() {
