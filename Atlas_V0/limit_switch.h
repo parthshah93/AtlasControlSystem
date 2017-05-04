@@ -24,13 +24,13 @@ public:
 		else if(ls1 == LOW && ls2 == LOW)
 			return 3;
 	}
-	unsigned char getLS1(){return digitalRead(ls1);}
-	unsigned char getLS2(){return digitalRead(ls2);}
+	unsigned char getLS1(){return digitalRead(ls1Port);}
+	unsigned char getLS2(){return digitalRead(ls2Port);}
 	unsigned char ls1Port = 29;
 	unsigned char ls2Port = 30;
 private:
 	unsigned ls1 = 0;
 	unsigned ls2 = 0;
-}
+};
 
 #endif

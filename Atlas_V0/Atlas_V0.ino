@@ -13,15 +13,16 @@
  *    freq: 100Hz (10ms)
  * 3. Timer2 COMPA is also used for failsafe.
  * 4. Timer0 is still avaliable for Arduino time functions(e.g. delay()).
- * 5. Motor0 : Pin  -> PWM3A
- *    Motor1 : Pin  -> PWM3B
- *    Motor2 : Pin  -> PWM3C
- *    Motor3 : Pin  -> PWM4A
- *    Servo0 : Pin  -> PWM4B
- *    Servo1 : Pin  -> PWM4C
+ * 5. Motor0 : Pin  -> PWM3A  -> pin 5  back right
+ *    Motor1 : Pin  -> PWM3B  -> pin 2  front right
+ *    Motor2 : Pin  -> PWM3C  -> pin 3  Front left
+ *    Motor3 : Pin  -> PWM4A  -> pin 6  back left
+ *    Servo0 : Pin  -> PWM4B  -> pin 7
+ *    Servo1 : Pin  -> PWM4C  -> pin 8
  *    Servo2 : Pin  -> PWM5A
  *    Servo3 : Pin  -> PWM5B
  *    Servo4 : Pin  -> PWM5C
+ *    limitswitch pin 29-30
 *************************************************************************/
 
 #include "atlasParser.h"
@@ -42,7 +43,7 @@ AtlasComm comm1;
 AtlasPWM myPWM;
 SysTick mySysTick;
 Indicator myIndicator;
-LimitSwtich myls;
+LimitSwitch myls;
 void emergencyStop(){
   int i;
   for(i = 0; i < 4; i++)
@@ -95,9 +96,29 @@ void refreshServos(){
 }
 
 void checkLimitSwitch(){
-  unsigned char ls_status = myls.checkLimits();
-  if(ls_status != 0)
+  unsigned char ls_status = 0;
+  unsigned char value = 0;
+  ls_status = myls.checkLimits();
+  if(ls_status == 3){
     myPWM.setServo(0, 127);
+  }
+  else if(ls_status == 0){
+    myPWM.setServo(0, comm1.getServo(0));
+  }
+  else if(ls_status == 1){
+    value = comm1.getServo(0);
+    if(value >= 0 && value <= 127)
+      myPWM.setServo(0, value);
+    else
+      myPWM.setServo(0, 127);
+  }
+  else if(ls_status == 2){
+    value = comm1.getServo(0);
+    if(value >= 127 && value < 256)
+      myPWM.setServo(0, value);
+    else
+      myPWM.setServo(0, 127);
+  }
 }
 
 void checkFailSafe(){

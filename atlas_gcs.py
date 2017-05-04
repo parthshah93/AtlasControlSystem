@@ -67,15 +67,15 @@ ui_buffer = Queue.Queue(maxsize = -1)
 
 command_buffer_lock = threading.Lock()
 
-#target_ip = "192.168.1.120"
-#target_port = 10010
-#local_ip = "192.168.1.100"
-#local_port = 10010
+target_ip = "192.168.1.120"
+target_port = 10010
+local_ip = "0.0.0.0"
+local_port = 10010
 
-target_ip = "127.0.0.1"
-target_port = 10086
-local_ip = "127.0.0.1"
-local_port = 8469
+#target_ip = "127.0.0.1"
+#target_port = 10086
+#local_ip = "127.0.0.1"
+#local_port = 8469
 
 connection_break = False
 
@@ -121,8 +121,8 @@ joystick_speed_setting_toggle = False
 digging_setting_toggle = False
 belt_setting_toggle = False
 scissor_setting_toggle = False
-speed_list = {'straightforward':[255,255,255,255], 'right':[0,0,255,255], 
-		'backward':[0,0,0,0], 'left':[255,255,0,0], 'digging':[0,255,255,0], 
+speed_list = {'backward':[255,255,0,0], 'left':[0,0,0,0], 
+		'straightforward':[0,0,255,255], 'right':[255,255,255,255], 'digging':[0,255,0,255], 
 		'stop':[127,127,127,127], 'scissor_up':26, 'scissor_down':228, 'scissor_stop': 127, 
 		'belt_fwd': 255, 'belt_bwd': 0, 'belt_stop': 127}
 motor_reverse_bit = [1, 1, -1, -1]
