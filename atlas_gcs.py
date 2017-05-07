@@ -72,10 +72,10 @@ target_port = 10010
 local_ip = "0.0.0.0"
 local_port = 10010
 
-#target_ip = "127.0.0.1"
-#target_port = 10086
-#local_ip = "127.0.0.1"
-#local_port = 8469
+# target_ip = "127.0.0.1"
+# target_port = 10086
+# local_ip = "127.0.0.1"
+# local_port = 8469
 
 connection_break = False
 
@@ -121,8 +121,8 @@ joystick_speed_setting_toggle = False
 digging_setting_toggle = False
 belt_setting_toggle = False
 scissor_setting_toggle = False
-speed_list = {'backward':[255,255,0,0], 'left':[0,0,0,0], 
-		'straightforward':[0,0,255,255], 'right':[255,255,255,255], 'digging':[0,255,0,255], 
+speed_list = {'backward':[228,228,26,26], 'left':[26,26,26,26], 
+		'straightforward':[26,26,228,228], 'right':[228,228,228,228], 'digging':[26,228,26,228], 
 		'stop':[127,127,127,127], 'scissor_up':26, 'scissor_down':228, 'scissor_stop': 127, 
 		'belt_fwd': 255, 'belt_bwd': 0, 'belt_stop': 127}
 motor_reverse_bit = [1, 1, -1, -1]
@@ -174,11 +174,34 @@ while done == False:
 				mode = 'digging'
 				print "Digging pressed"
 				digging_setting_toggle = True
-		if event.type == pygame.KEYUP and (event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_s 
-							or event.key == pygame.K_d or event.key == pygame.K_q):
-			mode = ''
-			print "Key released"
-			keyboard_speed_setting_toggle = True
+			elif event.key == pygame.K_i:
+				scissor_mode = 'scissor_up'
+				print "Scissor lift up pressed"
+				scissor_setting_toggle = True
+			elif event.key == pygame.K_l:
+				belt_mode = 'belt_fwd'
+				print "Belt forward pressed"
+				belt_setting_toggle = True
+			elif event.key == pygame.K_k:
+				scissor_mode = 'scissor_down'
+				print "Scissor lift down pressed"
+				scissor_setting_toggle = True
+			elif event.key == pygame.K_j:
+				belt_mode = 'belt_bwd'
+				print "Belt backward pressed"
+				belt_setting_toggle = True
+
+		if event.type == pygame.KEYUP: 
+			if event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_s or event.key == pygame.K_d or event.key == pygame.K_q:
+				mode = ''
+				print "Key released"
+				keyboard_speed_setting_toggle = True
+			elif event.key == pygame.K_j or event.key == pygame.K_l:
+				belt_mode = 'belt_stop'
+				belt_setting_toggle = True
+			elif event.key == pygame.K_i or event.key == pygame.K_k:
+				scissor_mode = 'scissor_stop'
+				scissor_setting_toggle = True
 		# Get joystick number
 		joystick_count = pygame.joystick.get_count()
 		# print joystick_count
