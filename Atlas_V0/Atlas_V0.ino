@@ -52,6 +52,14 @@ void emergencyStop(){
     myPWM.setServo(i, 127);
 }
 
+void initDataArr(){
+  int i;
+  for(i = 0; i < 4; i++)
+    comm1.setMotor(i, 127);
+  for(i = 0; i < 2; i++)
+    comm1.setServo(i, 127);
+}
+
 void setup() {
   // put your setup code here, to run once:
   usartInit();
@@ -60,6 +68,7 @@ void setup() {
   myPWM.start();
   mySysTick.init();
   mySysTick.start();
+  initDataArr();
   emergencyStop();
   interrupts();
 }
