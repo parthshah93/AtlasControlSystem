@@ -60,39 +60,8 @@ void setup() {
   myPWM.start();
   mySysTick.init();
   mySysTick.start();
+  emergencyStop();
   interrupts();
-}
-
-
-void refreshMotors(){
-  unsigned char i;
-  for(i = 0; i < 4; i++)
-    myPWM.setMotor(i, comm1.getMotor(i));
-}
-
-void refreshServos(){
-  unsigned char i;
-  for(i = 1; i < 5; i++)
-    myPWM.setServo(i, comm1.getServo(i));
-  unsigned char ls_status = 0;
-  unsigned char value = 0;
-  ls_status = myls.checkLimits();
-  if(ls_status == 3){
-    myPWM.setServo(0, 127);
-  }
-  else if(ls_status == 0){
-    myPWM.setServo(0, comm1.getServo(0));
-  }
-  else if(ls_status == 1){
-    value = comm1.getServo(0);
-    if(value >= 0 && value <= 127)
-      myPWM.setServo(0, value);
-  }
-  else if(ls_status == 2){
-    value = comm1.getServo(0);
-    if(value >= 127 && value < 256)
-      myPWM.setServo(0, value);
-  }
 }
 
 void checkLimitSwitch(){
@@ -119,6 +88,19 @@ void checkLimitSwitch(){
     else
       myPWM.setServo(0, 127);
   }
+}
+
+void refreshMotors(){
+  unsigned char i;
+  for(i = 0; i < 4; i++)
+    myPWM.setMotor(i, comm1.getMotor(i));
+}
+
+void refreshServos(){
+  unsigned char i;
+  for(i = 1; i < 5; i++)
+    myPWM.setServo(i, comm1.getServo(i));
+  checkLimitSwitch();
 }
 
 void checkFailSafe(){
