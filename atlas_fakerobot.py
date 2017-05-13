@@ -5,7 +5,7 @@ import struct
 local_ip = "127.0.0.1"
 local_port = 10086
 target_ip = "127.0.0.1"
-target_port = 8469
+target_port = 10010
 
 def data2bytestring(data):	#data is an integer list, we have to convert it into a bytestring e.g.[0x01,0x02,0x03] -> '\x01\x02\x03'
 	s = ''

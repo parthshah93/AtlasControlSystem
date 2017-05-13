@@ -4,6 +4,7 @@ import socket, json, os, time
 import threading, Queue
 import atlas_parser, atlas_socket
 import pygame
+import sys
 	
 
 def putincommand(data):
@@ -67,15 +68,15 @@ ui_buffer = Queue.Queue(maxsize = -1)
 
 command_buffer_lock = threading.Lock()
 
-target_ip = "192.168.1.120"
-target_port = 10010
 local_ip = "0.0.0.0"
 local_port = 10010
 
-# target_ip = "127.0.0.1"
-# target_port = 10086
-# local_ip = "127.0.0.1"
-# local_port = 8469
+if len(sys.argv) == 1:
+	target_ip = "192.168.1.120"
+	target_port = 10010
+elif sys.argv[1] == 'local':
+	target_ip = "127.0.0.1"
+	target_port = 10086
 
 connection_break = False
 
