@@ -17,12 +17,20 @@
  *    Motor1 : Pin  -> PWM3B  -> pin 2  front right
  *    Motor2 : Pin  -> PWM3C  -> pin 3  Front left
  *    Motor3 : Pin  -> PWM4A  -> pin 6  back left
- *    Servo0 : Pin  -> PWM4B  -> pin 7
- *    Servo1 : Pin  -> PWM4C  -> pin 8
- *    Servo2 : Pin  -> PWM5A
- *    Servo3 : Pin  -> PWM5B
- *    Servo4 : Pin  -> PWM5C
+ *    Servo0 : Pin  -> PWM4B  -> pin 7  scissor lift
+ *    Servo1 : Pin  -> PWM4C  -> pin 8  belt motor
+ *    Servo2 : Pin  -> PWM5A  -> pin 46
+ *    Servo3 : Pin  -> PWM5B  -> pin 45
+ *    Servo4 : Pin  -> PWM5C  -> pin 44
  *    limitswitch pin 29-30
+ *    SW0 : pin 31 belt motor
+ *    SW1 : pin 32 sweep motor
+ *    SW2 : pin 33
+ *    SW3 : pin 34
+ *    SW4 : pin 35
+ *    SW5 : pin 36
+ *    SW6 : pin 37
+ *    SW7 : pin 38
 *************************************************************************/
 
 #include "atlasParser.h"
@@ -31,6 +39,7 @@
 #include "pwm.h"
 #include "indicator.h"
 #include "limit_switch.h"
+#include "switches.h"
 
 extern unsigned char recvPackageComplete;
 extern unsigned char recvBuffer[256];
@@ -44,12 +53,15 @@ AtlasPWM myPWM;
 SysTick mySysTick;
 Indicator myIndicator;
 LimitSwitch myls;
+Switches mySwitch;
 void emergencyStop(){
   int i;
   for(i = 0; i < 4; i++)
     myPWM.setMotor(i, 127);
   for(i = 0; i < 2; i++)
     myPWM.setServo(i, 127);
+  mySwitch.setSwitch(0, 0);
+  mySwitch.setSwitch(1, 0);
 }
 
 void initDataArr(){
@@ -107,9 +119,13 @@ void refreshMotors(){
 
 void refreshServos(){
   unsigned char i;
-  for(i = 1; i < 5; i++)
+  for(i = 0; i < 5; i++)
     myPWM.setServo(i, comm1.getServo(i));
   checkLimitSwitch();
+}
+
+void refreshSwitches(){
+  mySwitch.setAllSwitch(comm1.getAllSwitch());
 }
 
 void checkFailSafe(){
@@ -136,6 +152,7 @@ void loop() {
       comm1.handleReturnRequest();
       refreshMotors();
       refreshServos();
+      refreshSwitches();
       recvPackageComplete = 0;
     }
     checkFailSafe();

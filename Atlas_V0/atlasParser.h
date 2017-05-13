@@ -14,6 +14,10 @@ public:
   void setVoltage(unsigned char channel, unsigned int value);
   unsigned int getCurrent(unsigned char channel);
   void setCurrent(unsigned char channel, unsigned int value);
+  unsigned char getSwitch(unsigned char channel);
+  void setSwitch(unsigned char channel, unsigned char value);
+  unsigned char getAllSwitch();
+  void setAllSwitch(unsigned char value);
 private:
   unsigned char dataArr[40];
   unsigned char returnArr[40];

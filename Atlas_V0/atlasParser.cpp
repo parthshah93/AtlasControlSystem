@@ -32,6 +32,26 @@ void AtlasComm::setCurrent(unsigned char channel, unsigned int value){
   currents[channel] = value;
 }
 
+unsigned char AtlasComm::getSwitch(unsigned char channel){
+  int switchStatus = dataArr[0x0F] & (0x01 << channel);
+  if(switchStatus)
+    return 1;
+  else
+    return 0;
+}
+
+void AtlasComm::setSwitch(unsigned char channel, unsigned char value){
+  dataArr[0x0F] |= value << channel;
+}
+
+unsigned char AtlasComm::getAllSwitch(){
+  return dataArr[0x0F];
+}
+
+void AtlasComm::setAllSwitch(unsigned char value){
+  dataArr[0x0F] = value;
+}
+
 void AtlasComm::parse(unsigned char* p){
   unsigned char length = 0;
   unsigned int i;

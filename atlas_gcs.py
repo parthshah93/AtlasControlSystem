@@ -122,10 +122,11 @@ digging_setting_toggle = False
 belt_setting_toggle = False
 scissor_setting_toggle = False
 speed_list = {'backward':[228,228,26,26], 'left':[26,26,26,26], 
-		'straightforward':[26,26,228,228], 'right':[228,228,228,228], 'digging':[26,228,26,228], 
+		'straightforward':[26,26,228,228], 'right':[228,228,228,228], 'digging':[228,26,228,26], 
 		'stop':[127,127,127,127], 'scissor_up':26, 'scissor_down':228, 'scissor_stop': 127, 
 		'belt_fwd': 255, 'belt_bwd': 0, 'belt_stop': 127}
 motor_reverse_bit = [1, 1, -1, -1]
+switches = 0;
 dead_zone_joystick = 150
 axis_change_th = 20
 x_axis_pre = 0
