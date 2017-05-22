@@ -25,12 +25,12 @@
     "returnable": "depends", 
     "wmin": 0
   }, 
-  "W/R Report Rate": {
+  "W/R Single Switch": {
     "rmin": 0, 
     "writedata": 0, 
-    "name": "W/R Report Rate", 
+    "name": "W/R Single Switch", 
     "rmax": 255, 
-    "cmd": 18, 
+    "cmd": 19, 
     "readdata": 0, 
     "writebits": 8, 
     "readbits": 8, 
@@ -226,6 +226,19 @@
     "name": "W/R Switches", 
     "rmax": 255, 
     "cmd": 15, 
+    "readdata": 0, 
+    "writebits": 8, 
+    "readbits": 8, 
+    "wmax": 255, 
+    "returnable": "depends", 
+    "wmin": 0
+  }, 
+  "W/R Report Rate": {
+    "rmin": 0, 
+    "writedata": 0, 
+    "name": "W/R Report Rate", 
+    "rmax": 255, 
+    "cmd": 18, 
     "readdata": 0, 
     "writebits": 8, 
     "readbits": 8, 

@@ -251,6 +251,19 @@ Command_Dict['W/R Report Rate']['rmin'] = 0
 Command_Dict['W/R Report Rate']['rmax'] = 255
 Command_Dict['W/R Report Rate']['returnable'] = 'depends'
 
+Command_Dict['W/R Single Switch'] = {}
+Command_Dict['W/R Single Switch']['name'] = 'W/R Single Switch'
+Command_Dict['W/R Single Switch']['cmd'] = 0x13
+Command_Dict['W/R Single Switch']['writebits'] = 8
+Command_Dict['W/R Single Switch']['writedata'] = 0x00
+Command_Dict['W/R Single Switch']['readbits'] = 8
+Command_Dict['W/R Single Switch']['readdata'] = 0x00
+Command_Dict['W/R Single Switch']['wmin'] = 0	
+Command_Dict['W/R Single Switch']['wmax'] = 255
+Command_Dict['W/R Single Switch']['rmin'] = 0
+Command_Dict['W/R Single Switch']['rmax'] = 255
+Command_Dict['W/R Single Switch']['returnable'] = 'depends'
+
 f = open('atlas_commands.json','w')
 json.dump(Command_Dict, f, indent = 2)
 f.close()
