@@ -87,12 +87,17 @@ command_buffer_lock = threading.Lock()
 local_ip = "0.0.0.0"
 local_port = 10010
 
-if len(sys.argv) == 1:
-	target_ip = "192.168.1.120"
-	target_port = 10010
-elif sys.argv[1] == 'local':
-	target_ip = "127.0.0.1"
-	target_port = 10086
+# if len(sys.argv) == 1:
+# 	target_ip = "192.168.1.120"
+# 	target_port = 10010
+# elif sys.argv[1] == 'local':
+# 	target_ip = "127.0.0.1"
+# 	target_port = 10086
+
+target_ip = "127.0.0.1"
+target_port = 10086
+# target_ip = "192.168.1.120"
+# target_port = 10010
 
 connection_break = False
 
@@ -143,6 +148,7 @@ sweep_mode = 'sweep_stop'
 keyboard_speed_setting_toggle = False
 joystick_speed_setting_toggle = False
 digging_setting_toggle = False
+sweep_setting_toggle = False
 belt_setting_toggle = False
 scissor_setting_toggle = False
 speed_list = {'backward':[228,228,26,26], 'left':[26,26,26,26], 
@@ -159,6 +165,7 @@ y_axis_pre = 0
 belt_button_pre = 0
 scissor_button_pre = 0
 dig_button_pre = 0
+sweep_button_pre = 0
 x_axis_raw = 0
 y_axis_raw = 0
 x_axis_remapped = 0
@@ -216,19 +223,18 @@ while done == False:
 				scissor_mode = 'scissor_down'
 				print "Scissor lift down pressed"
 				scissor_setting_toggle = True
-			# elif event.key == pygame.K_j:
-			# 	belt_mode = 'belt_bwd'
-			# 	print "Belt backward pressed"
-			# 	belt_setting_toggle = True
+			elif event.key == pygame.K_j:
+				sweep_mode = 'sweep_start'
+				print "Sweep pressed"
+				sweep_setting_toggle = True
 
 		if event.type == pygame.KEYUP: 
 			if event.key == pygame.K_w or event.key == pygame.K_a or event.key == pygame.K_s or event.key == pygame.K_d:
-				mode = ''
+				mode = 'stop'
 				print "Key released"
 				keyboard_speed_setting_toggle = True
 			elif event.key == pygame.K_q:
 				mode = 'stop'
-				sweep_mode = 'sweep_stop'
 				print "Key released"
 				digging_setting_toggle = True
 			elif event.key == pygame.K_l:
@@ -237,6 +243,9 @@ while done == False:
 			elif event.key == pygame.K_i or event.key == pygame.K_k:
 				scissor_mode = 'scissor_stop'
 				scissor_setting_toggle = True
+			elif event.key == pygame.K_j:
+				sweep_mode = 'sweep_stop'
+				sweep_setting_toggle = True
 		# Get joystick number
 		joystick_count = pygame.joystick.get_count()
 		# print joystick_count
@@ -248,6 +257,7 @@ while done == False:
 			if is_os:
 				dig_button = joystick.get_button(11)
 				belt_button = joystick.get_button(12)
+				sweep_button = joystick.get_button(13)
 				opt_scissor_button = (joystick.get_button(0), joystick.get_button(1))
 				if opt_scissor_button == (0,0) or opt_scissor_button == (1,1):
 					scissor_button = 0
@@ -259,6 +269,7 @@ while done == False:
 				dig_button = joystick.get_button(0)
 				_, scissor_button = joystick.get_hat(0)
 				belt_button = joystick.get_button(1)
+				sweep_button = joystick.get_button(2)
 			# print x_axis_raw, " ", y_axis_raw
 			if dig_button == 0 and dig_button_pre == 0:
 				if int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) == 127 and not x_axis_home:
@@ -316,13 +327,20 @@ while done == False:
 				joystick_speed_setting_toggle = False
 				keyboard_speed_setting_toggle = False
 				digging_setting_toggle = True
+			if sweep_button_pre != sweep_button:
+				if sweep_button == 1:
+					sweep_mode = 'sweep_start'
+				elif sweep_button == 0:
+					sweep_mode = 'sweep_stop'
+				sweep_setting_toggle = True
+			sweep_button_pre = sweep_button
 			scissor_button_pre = scissor_button
 			belt_button_pre = belt_button
 			dig_button_pre = dig_button
 			x_axis_pre = x_axis_raw
 			y_axis_pre = y_axis_raw
 	if joystick_speed_setting_toggle or keyboard_speed_setting_toggle \
-		or digging_setting_toggle or belt_setting_toggle or scissor_setting_toggle:
+		or digging_setting_toggle or belt_setting_toggle or scissor_setting_toggle or sweep_setting_toggle:
 		send_data = []
 		if joystick_speed_setting_toggle:
 			send_data.append({'name': 'W/R Motor0', 'value': mix_control(x_axis_remapped, y_axis_remapped, 0)})
@@ -331,23 +349,16 @@ while done == False:
 			send_data.append({'name': 'W/R Motor3', 'value': mix_control(x_axis_remapped, y_axis_remapped, 3)})
 			joystick_speed_setting_toggle = False
 		if keyboard_speed_setting_toggle:
-			if not mode == '':
-				send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
-				send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
-				send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
-				send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
-			else:
-				send_data.append({'name': 'W/R Motor0', 'value': 127})
-				send_data.append({'name': 'W/R Motor1', 'value': 127})
-				send_data.append({'name': 'W/R Motor2', 'value': 127})
-				send_data.append({'name': 'W/R Motor3', 'value': 127})
+			send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
+			send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
+			send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
+			send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
 			keyboard_speed_setting_toggle = False
 		if digging_setting_toggle:
 			send_data.append({'name': 'W/R Motor0', 'value': speed_list[mode][0]})
 			send_data.append({'name': 'W/R Motor1', 'value': speed_list[mode][1]})
 			send_data.append({'name': 'W/R Motor2', 'value': speed_list[mode][2]})
 			send_data.append({'name': 'W/R Motor3', 'value': speed_list[mode][3]})
-			send_data.append({'name': 'W/R Servo1', 'value': speed_list[sweep_mode]})
 			digging_setting_toggle = False
 		if belt_setting_toggle:
 			# send_data.append({'name': 'W/R Servo1', 'value': speed_list[belt_mode]})
@@ -356,6 +367,9 @@ while done == False:
 		if scissor_setting_toggle:
 			send_data.append({'name': 'W/R Servo0', 'value': speed_list[scissor_mode]})
 			scissor_setting_toggle = False
+		if sweep_setting_toggle:
+			send_data.append({'name': 'W/R Servo1', 'value': speed_list[sweep_mode]})
+			sweep_setting_toggle = False
 		putincommand(send_data)
 	connection_status.draw()
 	pygame.display.flip()
