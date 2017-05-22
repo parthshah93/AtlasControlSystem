@@ -52,6 +52,14 @@ void AtlasComm::setAllSwitch(unsigned char value){
   dataArr[0x0F] = value;
 }
 
+unsigned char AtlasComm::getSingleSwitch(){
+  return dataArr[0x13];
+}
+
+void AtlasComm::setSingleSwitch(unsigned char value){
+  dataArr[0x13] = value;
+}
+
 void AtlasComm::parse(unsigned char* p){
   unsigned char length = 0;
   unsigned int i;

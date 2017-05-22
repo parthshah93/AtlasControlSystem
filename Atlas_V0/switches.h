@@ -42,6 +42,15 @@ public:
 		}
 		return result;
 	}
+	void setSingleSwitch(unsigned char value){
+		int channel = value >> 5;
+		int val = value & 0x01;
+		setSwitch(channel, val);
+	}
+	void getSingleSwitch(unsigned char value){
+		int channel = value >> 5;
+		getSwitch(channel);
+	}
 private:
 	unsigned char swPort[8] = {31,32,33,34,35,36,37,38};
 	unsigned char sw[8] = {0};

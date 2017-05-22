@@ -18,13 +18,13 @@
  *    Motor2 : Pin  -> PWM3C  -> pin 3  Front left
  *    Motor3 : Pin  -> PWM4A  -> pin 6  back left
  *    Servo0 : Pin  -> PWM4B  -> pin 7  scissor lift
- *    Servo1 : Pin  -> PWM4C  -> pin 8  belt motor
+ *    Servo1 : Pin  -> PWM4C  -> pin 8  sweep motor
  *    Servo2 : Pin  -> PWM5A  -> pin 46
  *    Servo3 : Pin  -> PWM5B  -> pin 45
  *    Servo4 : Pin  -> PWM5C  -> pin 44
  *    limitswitch pin 29-30
  *    SW0 : pin 31 belt motor
- *    SW1 : pin 32 sweep motor
+ *    SW1 : pin 32
  *    SW2 : pin 33
  *    SW3 : pin 34
  *    SW4 : pin 35
@@ -125,7 +125,8 @@ void refreshServos(){
 }
 
 void refreshSwitches(){
-  mySwitch.setAllSwitch(comm1.getAllSwitch());
+  // mySwitch.setAllSwitch(comm1.getAllSwitch());
+  mySwitch.setSingleSwitch(comm1.getSingleSwitch());
 }
 
 void checkFailSafe(){

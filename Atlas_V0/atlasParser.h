@@ -18,6 +18,8 @@ public:
   void setSwitch(unsigned char channel, unsigned char value);
   unsigned char getAllSwitch();
   void setAllSwitch(unsigned char value);
+  unsigned char getSingleSwitch();
+  void setSingleSwitch(unsigned char value);
 private:
   unsigned char dataArr[40];
   unsigned char returnArr[40];
