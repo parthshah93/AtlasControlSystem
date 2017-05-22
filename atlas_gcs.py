@@ -6,6 +6,21 @@ import atlas_parser, atlas_socket
 import pygame
 import sys
 	
+class DrawStatus:
+	def __init__(self, screen, center=(50, 50), radius=20):
+		self.center = center
+		self.radius = radius
+		self.connected_color = (0, 255, 0)
+		self.disconnected_color = (255, 0, 0)
+		self.disconnected = False
+		self.screen = screen
+	def draw(self):
+		if self.disconnected:
+			pygame.draw.circle(self.screen, self.disconnected_color, self.center, self.radius, 0)
+		else:
+			pygame.draw.circle(self.screen, self.connected_color, self.center, self.radius, 0)
+	def setStatus(self, status):
+		self.disconnected = status
 
 def putincommand(data):
 	if not connection_break:
@@ -107,12 +122,15 @@ socket_thread.socket_start()
 # PyGame Initialization
 pygame.init()
 pygame.joystick.init()
-pygame.display.set_caption('Keyboard Capture')
+pygame.display.set_caption('AtlasGCS')
 size = [100, 100]
 screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
+connection_status = DrawStatus(screen)
 
 # Variable Initialization
+BLACK = (   0,   0,   0)
+WHITE = ( 255, 255, 255)
 done = False
 mode = ''
 belt_mode = ''
@@ -144,12 +162,15 @@ y_axis_home = False
 
 # Main loop
 while done == False:
+	screen.fill(BLACK)
 	if not ui_buffer.empty():
 		ui_data = ui_buffer.get()
 		if ui_data['type'] == "connection_break":
 			connection_break = True
 		else:
 			connection_break = False
+		connection_status.setStatus(connection_break)
+
 	for event in pygame.event.get(): # User did something
 		if event.type == pygame.QUIT: # If user clicked close
 			done=True # Flag that we are done so we exit this loop
@@ -304,6 +325,7 @@ while done == False:
 			send_data.append({'name': 'W/R Servo0', 'value': speed_list[scissor_mode]})
 			scissor_setting_toggle = False
 		putincommand(send_data)
+	connection_status.draw()
 	pygame.display.flip()
 	clock.tick(60)
 pygame.quit ()
