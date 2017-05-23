@@ -56,10 +56,14 @@ LimitSwitch myls;
 Switches mySwitch;
 void emergencyStop(){
   int i;
-  for(i = 0; i < 4; i++)
+  for(i = 0; i < 4; i++){
     myPWM.setMotor(i, 127);
-  for(i = 0; i < 2; i++)
+    comm1.setMotor(i, 127);
+  }
+  for(i = 0; i < 2; i++){
     myPWM.setServo(i, 127);
+    comm1.setServo(i, 127);
+  }
   mySwitch.setSwitch(0, 0);
   mySwitch.setSwitch(1, 0);
 }
