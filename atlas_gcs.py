@@ -94,10 +94,10 @@ local_port = 10010
 # 	target_ip = "127.0.0.1"
 # 	target_port = 10086
 
-target_ip = "127.0.0.1"
-target_port = 10086
-# target_ip = "192.168.1.120"
-# target_port = 10010
+# target_ip = "127.0.0.1"
+# target_port = 10086
+target_ip = "192.168.1.120"
+target_port = 10010
 
 connection_break = False
 
@@ -395,7 +395,6 @@ while done == False:
 			else:
 				sweep_mode = 'sweep_stop'
 			print sweep_mode
-			sweep_setting_toggle = True
 	pulse_status_pre = pulse_status
 	if joystick_speed_setting_toggle or keyboard_speed_setting_toggle \
 		or digging_setting_toggle or belt_setting_toggle or scissor_setting_toggle or sweep_setting_toggle:
