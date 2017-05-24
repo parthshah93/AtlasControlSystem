@@ -394,7 +394,7 @@ while done == False:
 				sweep_mode = 'sweep_start'
 			else:
 				sweep_mode = 'sweep_stop'
-			print sweep_mode
+			sweep_setting_toggle = True
 	pulse_status_pre = pulse_status
 	if joystick_speed_setting_toggle or keyboard_speed_setting_toggle \
 		or digging_setting_toggle or belt_setting_toggle or scissor_setting_toggle or sweep_setting_toggle:
