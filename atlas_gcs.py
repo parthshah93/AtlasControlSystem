@@ -161,7 +161,7 @@ speed_list = {'backward':[228,228,26,26], 'left':[26,26,26,26],
 		'straightforward':[26,26,228,228], 'right':[228,228,228,228], 'digging':[228,26,228,26], 
 		'stop':[127,127,127,127], 'scissor_up':26, 'scissor_down':228, 'scissor_stop': 127, 
 		'belt_fwd': 255, 'belt_bwd': 0, 'belt_stop': 127, 'sweep_start': 255, 'sweep_stop': 127,
-		'back_digging':[228, 127, 228, 127]}
+		'back_digging':[228, 127, 127, 26], 'front_digging':[127, 26, 228, 127]}
 belt_list = {'belt_fwd': 1, 'belt_stop': 0}
 motor_reverse_bit = [1, 1, -1, -1]
 switches = 0;
@@ -174,6 +174,7 @@ scissor_button_pre = 0
 dig_button_pre = 0
 sweep_button_pre = 0
 back_dig_button_pre = 0
+front_dig_button_pre = 0
 pulse_status_pre = 0
 dig_mode = False
 x_axis_raw = 0
@@ -281,13 +282,14 @@ while done == False:
 			else:
 				dig_button = joystick.get_button(0)
 				_, scissor_button = joystick.get_hat(0)
-				belt_button = joystick.get_button(3)
-				sweep_button = joystick.get_button(2)
-				back_dig_button = joystick.get_button(1)
+				belt_button = joystick.get_button(1)
+				sweep_button = joystick.get_button(4)
+				back_dig_button = joystick.get_button(2)
+				front_dig_button = joystick.get_button(3)
 				pulse_mode_button = joystick.get_button(6)
 				toggle_mode_button = joystick.get_button(7)
 			# print x_axis_raw, " ", y_axis_raw
-			if (dig_button == 0 and dig_button_pre == 0) and (back_dig_button == 0 and back_dig_button_pre == 0):
+			if (dig_button == 0 and dig_button_pre == 0) and (back_dig_button == 0 and back_dig_button_pre == 0) and (front_dig_button == 0 and front_dig_button_pre == 0):
 				if int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) == 127 and not x_axis_home:
 					joystick_speed_setting_toggle = True
 					keyboard_speed_setting_toggle = False
@@ -326,6 +328,16 @@ while done == False:
 				keyboard_speed_setting_toggle = False
 				digging_setting_toggle = True
 			elif back_dig_button == 0 and back_dig_button_pre == 1:
+				mode = 'stop'
+				joystick_speed_setting_toggle = False
+				keyboard_speed_setting_toggle = False
+				digging_setting_toggle = True
+			elif front_dig_button == 1 and front_dig_button_pre == 0:
+				mode = 'front_digging'
+				joystick_speed_setting_toggle = False
+				keyboard_speed_setting_toggle = False
+				digging_setting_toggle = True
+			elif front_dig_button == 0 and front_dig_button_pre == 1:
 				mode = 'stop'
 				joystick_speed_setting_toggle = False
 				keyboard_speed_setting_toggle = False
@@ -372,6 +384,7 @@ while done == False:
 			scissor_button_pre = scissor_button
 			belt_button_pre = belt_button
 			dig_button_pre = dig_button
+			front_dig_button_pre = front_dig_button
 			back_dig_button_pre = back_dig_button
 			x_axis_pre = x_axis_raw
 			y_axis_pre = y_axis_raw
