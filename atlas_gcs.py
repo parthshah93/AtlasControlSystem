@@ -151,10 +151,17 @@ digging_setting_toggle = False
 sweep_setting_toggle = False
 belt_setting_toggle = False
 scissor_setting_toggle = False
+toggle_scissor_mode = False
+toggle_sweep_mode = False
+pulse_sweep_mode = False
+pulse_counter = 0
+pulse_threshold = 15
+pulse_status = 0
 speed_list = {'backward':[228,228,26,26], 'left':[26,26,26,26], 
 		'straightforward':[26,26,228,228], 'right':[228,228,228,228], 'digging':[228,26,228,26], 
 		'stop':[127,127,127,127], 'scissor_up':26, 'scissor_down':228, 'scissor_stop': 127, 
-		'belt_fwd': 255, 'belt_bwd': 0, 'belt_stop': 127, 'sweep_start': 255, 'sweep_stop': 127}
+		'belt_fwd': 255, 'belt_bwd': 0, 'belt_stop': 127, 'sweep_start': 255, 'sweep_stop': 127,
+		'back_digging':[228, 127, 228, 127]}
 belt_list = {'belt_fwd': 1, 'belt_stop': 0}
 motor_reverse_bit = [1, 1, -1, -1]
 switches = 0;
@@ -166,6 +173,9 @@ belt_button_pre = 0
 scissor_button_pre = 0
 dig_button_pre = 0
 sweep_button_pre = 0
+back_dig_button_pre = 0
+pulse_status_pre = 0
+dig_mode = False
 x_axis_raw = 0
 y_axis_raw = 0
 x_axis_remapped = 0
@@ -268,10 +278,17 @@ while done == False:
 			else:
 				dig_button = joystick.get_button(0)
 				_, scissor_button = joystick.get_hat(0)
-				belt_button = joystick.get_button(1)
+				belt_button = joystick.get_button(3)
 				sweep_button = joystick.get_button(2)
+				back_dig_button = joystick.get_button(1)
+				pulse_mode_button = joystick.get_button(6)
+				toggle_mode_button = joystick.get_button(7)
+			if (dig_button == 0 and dig_button_pre == 0) or (back_dig_button == 0 and back_dig_button_pre == 0):
+				dig_mode = False
+			else:
+				dig_mode = True
 			# print x_axis_raw, " ", y_axis_raw
-			if dig_button == 0 and dig_button_pre == 0:
+			if not dig_mode:
 				if int(linear_remap_signed(dead_zone_joystick, x_axis_raw)) == 127 and not x_axis_home:
 					joystick_speed_setting_toggle = True
 					keyboard_speed_setting_toggle = False
@@ -307,32 +324,58 @@ while done == False:
 						belt_mode = 'belt_stop'			
 					belt_setting_toggle = True
 				if scissor_button_pre != scissor_button:
+					if toggle_mode_button == 1:
+						toggle_scissor_mode = True
+					else:
+						toggle_scissor_mode = False
 					if scissor_button == 1:
 						scissor_mode = 'scissor_up'
 					elif scissor_button == -1:
 						scissor_mode = 'scissor_down'
-					elif scissor_button == 0:
+					elif scissor_button == 0 and toggle_scissor_mode == False:
 						scissor_mode = 'scissor_stop'
 					scissor_setting_toggle = True
-
 			elif dig_button == 1 and dig_button_pre == 0:
 				mode = 'digging'
-				sweep_mode = 'sweep_start'
 				joystick_speed_setting_toggle = False
 				keyboard_speed_setting_toggle = False
 				digging_setting_toggle = True
 			elif dig_button == 0 and dig_button_pre == 1:
 				mode = 'stop'
-				sweep_mode = 'sweep_stop'
+				joystick_speed_setting_toggle = False
+				keyboard_speed_setting_toggle = False
+				digging_setting_toggle = True
+			elif back_dig_button == 1 and back_dig_button_pre == 0:
+				mode = 'back_digging'
+				joystick_speed_setting_toggle = False
+				keyboard_speed_setting_toggle = False
+				digging_setting_toggle = True
+			elif back_dig_button == 0 and back_dig_button_pre == 1:
+				mode = 'stop'
 				joystick_speed_setting_toggle = False
 				keyboard_speed_setting_toggle = False
 				digging_setting_toggle = True
 			if sweep_button_pre != sweep_button:
+				if toggle_mode_button == 1:
+					toggle_sweep_mode = True
+				else:
+					toggle_sweep_mode = False
+				if pulse_mode_button == 1:
+					pulse_sweep_mode = True
+				else:
+					pulse_sweep_mode = False
 				if sweep_button == 1:
 					sweep_mode = 'sweep_start'
-				elif sweep_button == 0:
+				elif sweep_button == 0 and toggle_sweep_mode == False and pulse_sweep_mode == False:
 					sweep_mode = 'sweep_stop'
 				sweep_setting_toggle = True
+			if pulse_status != pulse_status:
+				if pulse_sweep_mode:
+					if pulse_status == 1:
+						sweep_mode = 'sweep_start'
+					else:
+						sweep_mode = 'sweep_stop'
+			pulse_status_pre = pulse_status
 			sweep_button_pre = sweep_button
 			scissor_button_pre = scissor_button
 			belt_button_pre = belt_button
@@ -373,5 +416,9 @@ while done == False:
 		putincommand(send_data)
 	connection_status.draw()
 	pygame.display.flip()
+	pulse_counter += 1
+	if pulse_counter > pulse_threshold:
+		pulse_counter = 0
+		pulse_status = 1 - pulse_status
 	clock.tick(60)
 pygame.quit()

@@ -3,7 +3,7 @@
 unsigned int globalRefreshTime = 0;
 unsigned char globalRefreshReady = 0;
 unsigned int failSafeCounter = 0;
-unsigned int failSafeThreshold = 100;
+unsigned int failSafeThreshold = 300;
 unsigned char failSafeFlag = 0;
 unsigned char failSafeHandled = 0;
 unsigned char failSafeRecovered = 0;
