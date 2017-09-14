@@ -1,4 +1,4 @@
-# network
+# AtlasControlSystem
 Code from troy:</br>
 
 04/30/2017 Update:</br>
